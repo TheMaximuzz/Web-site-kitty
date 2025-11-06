@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-grid">
+  <section class="catalog">
+    <h2>Готовые котики</h2>
+    <p class="muted">Выберите одного из наших готовых котиков или создайте своего уникального!</p>
+
+    <div class="cards-grid">
+      {% for cat in cats %}
+      <article class="card">
+        <div class="card-media">
+          <img src="{{ url_for('static', filename='images/' + cat.image) }}" alt="{{ cat.name }}">
+        </div>
+        <div class="card-body">
+          <h3>{{ cat.name }}</h3>
+          <div class="muted small">{{ cat.accessories_count }} аксессуаров</div>
+          <div class="price">{{ "{:,.0f}".format(cat.price).replace(',', ' ') }} ₽</div>
+          <button class="btn add-to-cart" data-id="{{ cat.id }}" data-name="{{ cat.name }}" data-price="{{ cat.price }}">
+            🛒 В корзину
+          </button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <aside class="cart">
+    <div class="cart-box">
+      <div class="cart-empty">
+        <div class="cart-icon">🛒</div>
+        <div class="muted">Ваша корзина пуста<br>Добавьте котиков, чтобы продолжить покупку</div>
+      </div>
+      <div id="cart-contents" class="cart-contents hidden"></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

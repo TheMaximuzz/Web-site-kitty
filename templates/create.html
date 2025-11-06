@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="create-grid">
+  <div class="card preview-card">
+    <h3>Предпросмотр вашего котика</h3>
+    <div class="preview-image">
+      <img id="previewImage" src="{{ url_for('static', filename='images/' + sample.image) }}" alt="preview">
+    </div>
+    <div class="final-price">
+      Итоговая цена: <span id="finalPrice">{{ "{:,.0f}".format(sample.price).replace(',', ' ') }} ₽</span>
+    </div>
+  </div>
+
+  <div class="card form-card">
+    <h3>Настройте вашего котика</h3>
+
+    <label>Порода
+      <select id="breed">
+        <option value="persian">persian</option>
+        <option value="siamese">siamese</option>
+        <option value="calico">calico</option>
+      </select>
+    </label>
+
+    <label>Цвет
+      <select id="color">
+        <option value="orange">orange</option>
+        <option value="white">white</option>
+        <option value="black">black</option>
+      </select>
+    </label>
+
+    <label>Узор
+      <select id="pattern">
+        <option value="solid">solid</option>
+        <option value="spotted">spotted</option>
+        <option value="striped">striped</option>
+      </select>
+    </label>
+
+    <div class="accessories">
+      <div>Аксессуары</div>
+      {% for acc in accessories %}
+      <label class="checkbox">
+        <input type="checkbox" class="acc-checkbox" data-price="{{ acc.price }}" value="{{ acc.id }}">
+        {{ acc.name }} - {{ acc.price }} ₽
+      </label>
+      {% endfor %}
+    </div>
+
+    <button id="addToCartBtn" class="btn">🛒 Добавить в корзину</button>
+  </div>
+
+  <aside class="cart create-cart">
+    <div class="cart-box">
+      <div class="cart-empty">
+        <div class="cart-icon">🛒</div>
+        <div class="muted">Ваша корзина пуста<br>Добавьте котиков, чтобы продолжить покупку</div>
+      </div>
+      <div id="cart-contents-create" class="cart-contents hidden"></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

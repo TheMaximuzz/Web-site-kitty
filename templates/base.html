@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>КотоМагазин</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">
+        <div class="logo-icon">🐱</div>
+        <div class="logo-text">
+          <div class="title">КотоМагазин</div>
+          <div class="subtitle">Лучшие котики для вас</div>
+        </div>
+      </div>
+      <nav>
+        <a class="nav-link" href="{{ url_for('index') }}">Готовые котики</a>
+        <a class="nav-link" href="{{ url_for('create') }}">Создать своего</a>
+      </nav>
+      <div class="login">
+        <button class="btn small">Войти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">© 2025 КотоМагазин. Все котики найдут свой дом! 🐱</div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
