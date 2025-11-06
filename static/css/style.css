@@ -65,3 +65,9 @@ h2{margin:6px 0 8px}
 .form-card label{display:block;margin:12px 0}
 .form-card select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef7}
 .checkbox{display:block;margin:8px 0}
+
+.remove-btn:hover { background:#ff3333 !important; }
+#clear-cart-btn-cart-contents:hover,
+#clear-cart-btn-cart-contents-create:hover {
+  background:#ff3333 !important;
+}
