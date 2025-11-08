@@ -340,3 +340,28 @@ h2 {
 #clear-cart-btn-cart-contents-create:active {
   transform: translateY(1px);
 }
+
+/* === Sticky footer (прижат к низу окна) === */
+/* Чтобы flex-решение работало во всех браузерах */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+.site-footer {
+  background: transparent; 
+  border-top: 1px solid #eef3f8;
+  padding: 16px 0;
+  text-align: center;
+  flex-shrink: 0;
+}
