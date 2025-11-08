@@ -1,5 +1,3 @@
-// static/js/cart.js
-
 function getLocalCart() {
     try {
       return JSON.parse(localStorage.getItem('koto_cart') || '[]');
@@ -37,16 +35,16 @@ function getLocalCart() {
     if (!container) return;
   
     const cart = getLocalCart();
-    const cartId = selector.slice(1); // #cart-contents → cart-contents
+    const cartId = selector.slice(1);
   
-    // === Очистка старых обработчиков ===
+    // очистка старых обработчиков
     const oldRemoveBtns = container.querySelectorAll('.remove-btn');
     oldRemoveBtns.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
   
     const oldClearBtn = container.querySelector(`#clear-cart-btn-${cartId}`);
     if (oldClearBtn) oldClearBtn.replaceWith(oldClearBtn.cloneNode(true));
   
-    // === Пустая корзина ===
+    // пустая корзина
     if (!cart.length) {
       container.innerHTML = '';
       container.classList.add('hidden');
@@ -55,7 +53,7 @@ function getLocalCart() {
       return;
     }
   
-    // === Корзина с товарами ===
+    // коризна если в ней товары
     container.classList.remove('hidden');
     const parent = container.closest('.cart-box');
     if (parent) parent.querySelector('.cart-empty').classList.add('hidden');
@@ -86,7 +84,7 @@ function getLocalCart() {
   
     container.innerHTML = html;
   
-    // === Привязка новых обработчиков ===
+    // новые обработчики
     container.querySelectorAll('.remove-btn').forEach(btn => {
       btn.addEventListener('click', function () {
         const idx = parseInt(this.dataset.index, 10);
@@ -112,7 +110,7 @@ function getLocalCart() {
     }
   }
   
-  // Экспортируем для main.js
+
   window.Cart = {
     add: addToLocalCart,
     render: renderCart,

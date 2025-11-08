@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request, url_for, redirect
 
 app = Flask(__name__)
 
-# Статический список котиков — в реальном проекте это БД
+# cтатический список котиков - в реальном проекте это БД
 CATS = [
     {
         "id": 1,
@@ -62,15 +62,15 @@ def index():
 
 @app.route('/create')
 def create():
-    # Для превью используем первый котик как начальный образец
+    # первый котик как начальный образец
     sample = CATS[0]
     return render_template('create.html', sample=sample, accessories=ACCESSORIES)
 
-# Простой API для добавления в корзину (демонстрация)
+# api для добавления в корзину
 @app.route('/api/add-to-cart', methods=['POST'])
 def add_to_cart():
     data = request.json or {}
-    # просто возвращаем подтверждение — в реале нужно писать в сессии/БД
+    # просто возвращаем подтверждение - в реале нужно писать в сессии/БД
     return jsonify({"ok": True, "added": data})
 
 if __name__ == '__main__':
