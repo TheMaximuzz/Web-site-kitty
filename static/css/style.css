@@ -365,3 +365,45 @@ body {
   text-align: center;
   flex-shrink: 0;
 }
+
+.preview-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 420px; /* соответствует твоему макету */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.preview-image img.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 220ms ease, transform 220ms ease, filter 220ms ease;
+}
+
+/* порядок слоёв: breed (0), color (1), pattern (2) */
+.preview-image img.breed-layer   { z-index: 1; }
+.preview-image img.color-layer   { z-index: 2; mix-blend-mode: normal; pointer-events: none; }
+.preview-image img.pattern-layer { z-index: 3; mix-blend-mode: normal; pointer-events: none; }
+
+/* по умолчанию невидимые наложения (если файлов нет) */
+.preview-image img.overlay-hidden { opacity: 0; }
+
+/* лёгкая визуальная подпись, если нужно */
+.preview-image .preview-fallback {
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: rgba(255,255,255,0.9);
+  z-index: 10;
+  pointer-events: none;
+  font-weight:700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
