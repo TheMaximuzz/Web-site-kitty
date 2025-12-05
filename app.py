@@ -1,60 +1,41 @@
-from flask import Flask, render_template, jsonify, request, url_for, redirect
+from flask import Flask, render_template, jsonify, request, url_for
 
 app = Flask(__name__)
 
-# cтатический список котиков - в реальном проекте это БД
+# --- ДАННЫЕ (Имитация Базы Данных) ---
+
+# Готовые котики для главной страницы
 CATS = [
-    {
-        "id": 1,
-        "name": "Рыжик",
-        "price": 62300,
-        "accessories_count": 2,
-        "image": "cat1.jpg"
-    },
-    {
-        "id": 2,
-        "name": "Багира",
-        "price": 52000,
-        "accessories_count": 2,
-        "image": "cat2.jpg"
-    },
-    {
-        "id": 3,
-        "name": "Снежок",
-        "price": 57800,
-        "accessories_count": 3,
-        "image": "cat3.jpg"
-    },
-    {
-        "id": 4,
-        "name": "Симка",
-        "price": 45500,
-        "accessories_count": 1,
-        "image": "cat4.jpg"
-    },
-    {
-        "id": 5,
-        "name": "Дымок",
-        "price": 50800,
-        "accessories_count": 2,
-        "image": "cat5.jpg"
-    },
-    {
-        "id": 6,
-        "name": "Персик",
-        "price": 53800,
-        "accessories_count": 3,
-        "image": "cat6.jpg"
-    }
+    {"id": 1, "name": "Рыжик",  "price": 62300, "accessories_count": 2, "image": "cat1.jpg"},
+    {"id": 2, "name": "Багира", "price": 52000, "accessories_count": 2, "image": "cat2.jpg"},
+    {"id": 3, "name": "Снежок", "price": 57800, "accessories_count": 3, "image": "cat3.jpg"},
+    {"id": 4, "name": "Симка",  "price": 45500, "accessories_count": 1, "image": "cat4.jpg"},
+    {"id": 5, "name": "Дымок",  "price": 50800, "accessories_count": 2, "image": "cat5.jpg"},
+    {"id": 6, "name": "Персик", "price": 53800, "accessories_count": 3, "image": "cat6.jpg"}
+]
+
+
+HEADS = [
+    {"id": "head1", "name": "Рыжий и суровый", "file": "head1.png"},
+    {"id": "head2", "name": "Грустный",        "file": "head2.png"}, # Тут была опечатка с лишней кавычкой
+    {"id": "head3", "name": "Хитрый",          "file": "head3.png"},
+]
+
+BODIES = [
+    {"id": "body1", "name": "Космодесант", "file": "body1.png", "price": 15000},
+    {"id": "body2", "name": "Полиция",     "file": "body2.png", "price": 12000},
+    {"id": "body3", "name": "Уборщик",   "file": "body3.png", "price": 10000},
 ]
 
 ACCESSORIES = [
-    {"id": "collar", "name": "Ошейник с бантиком", "price": 500},
-    {"id": "bell", "name": "Колокольчик", "price": 300},
-    {"id": "toy", "name": "Игрушка", "price": 800},
-    {"id": "bed", "name": "Лежанка", "price": 1500},
-    {"id": "carrier", "name": "Переноска", "price": 2000},
+    {"id": "collar",  "name": "Ошейник с бантиком", "price": 500},
+    {"id": "bell",    "name": "Колокольчик",        "price": 300},
+    {"id": "toy",     "name": "Игрушка",            "price": 800},
+    {"id": "bed",     "name": "Лежанка",            "price": 1500},
+    {"id": "carrier", "name": "Переноска",          "price": 2000},
 ]
+
+# --- РОУТЫ ---
 
 @app.route('/')
 def index():
@@ -62,15 +43,16 @@ def index():
 
 @app.route('/create')
 def create():
-    # первый котик как начальный образец
-    sample = CATS[0]
-    return render_template('create.html', sample=sample, accessories=ACCESSORIES)
+    # Передаем списки голов, тел и аксессуаров в шаблон
+    return render_template('create.html', 
+                           heads=HEADS, 
+                           bodies=BODIES, 
+                           accessories=ACCESSORIES)
 
-# api для добавления в корзину
 @app.route('/api/add-to-cart', methods=['POST'])
 def add_to_cart():
     data = request.json or {}
-    # просто возвращаем подтверждение - в реале нужно писать в сессии/БД
+    # В реальном приложении здесь было бы сохранение в БД/Сессию
     return jsonify({"ok": True, "added": data})
 
 if __name__ == '__main__':

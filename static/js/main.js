@@ -1,143 +1,109 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+  // Инициализация корзины при загрузке (используем глобальный объект Cart из cart.js)
+  if (window.Cart) {
+    window.Cart.render('#cart-contents');
+    window.Cart.render('#cart-contents-create');
+  }
+
   /* =========================
-     CART (работа с локальной корзиной)
+     Логика добавления готовых котов (index.html)
      ========================= */
-  function getLocalCart(){
-    try { return JSON.parse(localStorage.getItem('koto_cart') || '[]'); }
-    catch(e){ return []; }
-  }
-  function setLocalCart(cart){ localStorage.setItem('koto_cart', JSON.stringify(cart)); }
-  function addToLocalCart(item){
-    const cart = getLocalCart();
-    cart.push(item);
-    setLocalCart(cart);
-  }
-  function formatPrice(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
-
-  function renderCart(selector){
-    const container = document.querySelector(selector);
-    if (!container) return;
-    const cart = getLocalCart();
-    if (!cart.length){
-      container.innerHTML = '';
-      container.classList.add('hidden');
-      const parent = container.closest('.cart-box');
-      if (parent){ parent.querySelector('.cart-empty').classList.remove('hidden'); }
-      return;
-    }
-    container.classList.remove('hidden');
-    const parent = container.closest('.cart-box');
-    if (parent){ parent.querySelector('.cart-empty').classList.add('hidden'); }
-
-    let html = '<ul style="list-style:none;padding:0;margin:0">';
-    let total = 0;
-    cart.forEach((it, idx) => {
-      html += `<li style="padding:8px 0;border-bottom:1px solid #f0f4f8">
-        <div style="display:flex;justify-content:space-between">
-          <div style="max-width:160px">${it.name}</div>
-          <div>${formatPrice(it.price)} ₽</div>
-        </div>
-      </li>`;
-      total += parseInt(it.price,10) || 0;
-    });
-    html += `</ul><div style="padding-top:10px;font-weight:700">Итого: ${formatPrice(total)} ₽</div>`;
-    container.innerHTML = html;
-  }
-
-  document.querySelectorAll('.add-to-cart').forEach(btn => {
+  const readyBtns = document.querySelectorAll('.add-to-cart');
+  readyBtns.forEach(btn => {
     btn.addEventListener('click', function() {
       const id = btn.dataset.id;
       const name = btn.dataset.name;
       const price = parseInt(btn.dataset.price, 10) || 0;
-      addToLocalCart({id, name, price, qty:1});
-      renderCart('#cart-contents');
+      
+      // Добавляем и обновляем
+      window.Cart.add({id, name, price});
+      window.Cart.render('#cart-contents');
       alert(name + ' добавлен в корзину');
     });
   });
 
-  renderCart('#cart-contents');
-  renderCart('#cart-contents-create');
-
-
-
   /* =========================
-     Кастомизация кота (основная логика)
+     Логика КОНСТРУКТОРА (create.html)
      ========================= */
-
-  const previewImg = document.getElementById('previewImage');
-  const breedSelect = document.getElementById('breed');
-  const colorSelect = document.getElementById('color');
-  const patternSelect = document.getElementById('pattern');
+  
+  const headSelect = document.getElementById('headSelect');
+  const bodySelect = document.getElementById('bodySelect');
+  const previewHead = document.getElementById('previewHead');
+  const previewBody = document.getElementById('previewBody');
   const finalPriceEl = document.getElementById('finalPrice');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+  const accCheckboxes = document.querySelectorAll('.acc-checkbox');
 
-  if (previewImg && breedSelect && colorSelect && patternSelect) {
+  // Функция пересчета цены
+  function updateState() {
+    if (!headSelect || !bodySelect) return;
 
-    /*  
-       👉 Главная функция,
-       формирует имя файла автоматически:
-       breed_color_pattern.jpg
-    */
-    function getCatImage(breed, color, pattern) {
-      return `/static/images/${breed}_${color}_${pattern}.jpg`;
+    // 1. Обновляем картинки
+    const headFile = headSelect.value;
+    const bodyFile = bodySelect.value;
+
+    // Путь к картинкам (Flask static)
+    previewHead.src = `/static/images/${headFile}`;
+    previewBody.src = `/static/images/${bodyFile}`;
+
+    // 2. Считаем цену
+    let total = 0;
+    
+    // Цена тела (берем из option)
+    const bodyOption = bodySelect.options[bodySelect.selectedIndex];
+    total += parseInt(bodyOption.dataset.price, 10) || 0;
+
+    // Аксессуары
+    accCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        total += parseInt(cb.dataset.price, 10) || 0;
+      }
+    });
+
+    // Обновляем текст цены
+    if (finalPriceEl) {
+      finalPriceEl.textContent = window.Cart.formatPrice(total) + ' ₽';
     }
 
-    function updatePreview(){
-      const breed = breedSelect.value;
-      const color = colorSelect.value;
-      const pattern = patternSelect.value;
-
-      const imgPath = getCatImage(breed, color, pattern);
-      previewImg.src = imgPath;
-    }
-
-    breedSelect.addEventListener('change', updatePreview);
-    colorSelect.addEventListener('change', updatePreview);
-    patternSelect.addEventListener('change', updatePreview);
-
-    updatePreview();
-
-
-    /* =========================
-       Кнопка "Добавить в корзину"
-       ========================= */
-    const addToCartBtn = document.getElementById('addToCartBtn');
-    if (addToCartBtn) {
-      addToCartBtn.addEventListener('click', function(){
-        const breed = breedSelect.value;
-        const color = colorSelect.value;
-        const pattern = patternSelect.value;
-
-        let total = 0;
-        if (finalPriceEl) {
-          total = parseInt(finalPriceEl.textContent.replace(/\s|₽/g, ''), 10) || 0;
-        }
-
-        const accCheckboxes = document.querySelectorAll('.acc-checkbox');
-        const selectedAcc = [];
-        accCheckboxes.forEach(cb => {
-          if (cb.checked){
-            total += parseInt(cb.dataset.price, 10) || 0;
-            selectedAcc.push(cb.value);
-          }
-        });
-
-        const imageFile = `${breed}_${color}_${pattern}.jpg`;
-
-        const item = {
-          id: 'custom-' + Date.now(),
-          name: `Свoй котик (${breed}, ${color}, ${pattern})`,
-          price: total,
-          image: imageFile,
-          config: {breed, color, pattern, accessories: selectedAcc}
-        };
-
-        addToLocalCart(item);
-        renderCart('#cart-contents-create');
-        alert('Ваш котик добавлен в корзину');
-      });
-    }
-
+    return total;
   }
 
+  if (headSelect && bodySelect) {
+    // Слушатели событий
+    headSelect.addEventListener('change', updateState);
+    bodySelect.addEventListener('change', updateState);
+    accCheckboxes.forEach(cb => cb.addEventListener('change', updateState));
+
+    // Первичный расчет
+    updateState();
+
+    // Кнопка "В корзину" из конструктора
+    addToCartBtn.addEventListener('click', function() {
+      const total = updateState(); // Получаем актуальную цену
+      
+      const headName = headSelect.options[headSelect.selectedIndex].dataset.name;
+      const bodyName = bodySelect.options[bodySelect.selectedIndex].dataset.name;
+      
+      // Собираем список аксессуаров
+      const selectedAcc = [];
+      accCheckboxes.forEach(cb => {
+        if (cb.checked) selectedAcc.push(cb.dataset.name);
+      });
+      const accString = selectedAcc.length ? ` (+ ${selectedAcc.join(', ')})` : '';
+
+      // Формируем товар
+      const item = {
+        id: 'custom-' + Date.now(),
+        name: `Кот: ${headName} в костюме "${bodyName}"${accString}`,
+        price: total,
+        // В корзине будем показывать только мордочку, так как собрать коллаж сложно для иконки
+        image: headSelect.value 
+      };
+
+      window.Cart.add(item);
+      window.Cart.render('#cart-contents-create');
+      alert('Ваш уникальный котик готов и добавлен в корзину!');
+    });
+  }
 });
