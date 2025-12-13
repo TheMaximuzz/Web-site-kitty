@@ -1,8 +1,11 @@
 from flask import Flask, render_template, jsonify, request, url_for
+from config.DBConnection import init_app, db, test_connection
 
 app = Flask(__name__)
 
-# --- ДАННЫЕ (Имитация Базы Данных) ---
+# Подключение базы данных
+init_app(app)
+test_connection(app)
 
 # Готовые котики для главной страницы
 CATS = [
